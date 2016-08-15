@@ -1,0 +1,56 @@
+* {
+  box-sizing: border-box;
+}
+html, body {
+  background-color: white;
+
+}
+html {
+  position: relative;
+  min-height: 100%;
+}
+a, a img {
+  transition: 0.2s;
+}
+body {
+  font-family: 'roboto', sans-serif;
+  color:black;
+  font-size: 18px;
+  margin: 35px;
+
+}
+h1 {
+  font-size: 2em;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 5px solid yellow;
+}
+h2 {
+  font-size: 1.3em;
+}
+h3 {
+  font-size: 1.2em;
+}
+h4 {
+  font-size: 1.1em;
+}
+p {
+  font-size: 1em;
+  line-height: 1.3em;
+}
+a {
+  text-decoration: none;
+  color: deeppink;
+}
+nav ul {
+padding: 0
+}
+nav li {
+  display: inline;
+  list-style: none;
+  padding: 0;
+  padding-right: 10px;
+}
+nav li:hover {
+  border-bottom: 5px solid yellow;
+}
