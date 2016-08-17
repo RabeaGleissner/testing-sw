@@ -1,30 +1,53 @@
 const PRECACHE = 'precache-v1';
 const RUNTIME = 'runtime';
 
+function addToCache (cacheKey, request, response) {
+  if (response.ok) {
+    var copy = response.clone();
+    caches.open(cacheKey).then( cache => {
+      cache.put(request, copy);
+    });
+  }
+  return response;
+}
+
+function fetchFromCache (event) {
+  return caches.match(event.request).then(response => {
+    if (!response) {
+      throw Error(`${event.request.url} not found in cache`);
+    }
+    return response;
+  });
+}
+
 self.addEventListener('install', event => {
-    event.waitUntil(
-            caches.open(PRECACHE)
-            .then(cache => cache.addAll([
+  function onInstall (event) {
+    return caches.open(PRECACHE)
+      .then(cache => cache.addAll([
                     'styles.css',
                     'script.js',
                     'home.html'
-            ]))
-            .then(self.skipWaiting())
-            );
+            ]));
+  }
+
+  event.waitUntil(
+    onInstall(event).then( () => self.skipWaiting() )
+  );
 });
 
+function onActivate(event) {
+    var currentCaches = [PRECACHE, RUNTIME];
+    return caches.keys()
+        .then(cacheNames => {
+            var cachesToDelete = cacheNames.filter(name => !currentCaches.includes(name));
+            var deletePromises = cachesToDelete.map(oldCache => caches.delete(oldCache))
+                return Promise.all(deletePromises)
+        })
+}
+
 self.addEventListener('activate', event => {
-    const currentCaches = [PRECACHE, RUNTIME];
     event.waitUntil(
-            caches.keys()
-            .then(cacheNames => {
-                return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
-            })
-            .then(cachesToDelete => {
-                return Promise.all(cachesToDelete.map(cacheToDelete => {
-                    return caches.delete(cacheToDelete);
-                }));
-            })
+            onActivate(event)
             .then(() => self.clients.claim())
             );
 });
@@ -37,7 +60,6 @@ self.addEventListener('fetch', event => {
             event.respondWith(
                     caches.match(event.request).then(cachedResponse => {
                         if (cachedResponse) {
-                            console.log('cache has got you covered')
                             return cachedResponse;
                         }
                         return caches.open(RUNTIME).then(cache => {
