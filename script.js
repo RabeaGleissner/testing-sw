@@ -3,7 +3,6 @@ if ('serviceWorker' in navigator) {
 }
 
 const selector = document.querySelector('#show')
-
 if (selector !== null) {
     selector.addEventListener('click', () => {
         const iconUrl = document.querySelector('select').selectedOptions[0].value;
